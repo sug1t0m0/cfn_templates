@@ -6,6 +6,8 @@ Resources:
     Type: AWS::IAM::Group
     Properties:
       GroupName: Initial
+      ManagedPolicyArns:
+        - !Ref EditableOwnPassword
 
   EditableOwnPassword:
     Type: AWS::IAM::ManagedPolicy
