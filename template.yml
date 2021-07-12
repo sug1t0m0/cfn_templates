@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: iam group
+
+Resources:
+  Initial:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: Initial
+
+  EditableOwnPassword:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: iam:GetAccountPasswordPolicy
+            Resource: "*"
+          - Effect: Allow
+            Action: iam:ChangePassword
+            Resource: "arn:aws:iam::account-id-without-hyphens:user/${aws:username}"
