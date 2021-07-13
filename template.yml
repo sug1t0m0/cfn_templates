@@ -2,14 +2,21 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: iam group
 
 Resources:
-  Initial:
+  GroupInitial:
     Type: AWS::IAM::Group
     Properties:
       GroupName: Initial
       ManagedPolicyArns:
-        - !Ref EditableOwnPassword
+        - !Ref PolicyEditableOwnPassword
 
-  EditableOwnPassword:
+  GroupAdmin:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: Admin
+      ManagedPolicyArns:
+        - !Ref AssumeAdministrator
+
+  PolicyEditableOwnPassword:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -21,3 +28,28 @@ Resources:
           - Effect: Allow
             Action: iam:ChangePassword
             Resource: "arn:aws:iam::account-id-without-hyphens:user/${aws:username}"
+
+  AssumeAdministrator:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Resource: !GetAtt RoleAdministrator.Arn
+
+  RoleAdministrator:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: Administrator
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              AWS: !Sub ${AWS::AccountId}
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+      Path: "/"
